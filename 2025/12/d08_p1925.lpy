@@ -1,0 +1,29 @@
+(require lispy.macros [->])
+
+(defmacro leetcode [fnname *examples]
+  (return `(do (class Solution []
+                 (def ~fnname [self *args **kwargs]
+                   (return (solution *args **kwargs))))
+               ~(ife examples
+                     `(list (map (lambda [x] (print x "\n" (:= ans (solution *x))))
+                                 [~@examples]))
+                     None))))
+
+(from math [sqrt floor])
+
+(def solution [n]
+  (= rst 0)
+  (for c in (range 5 (+ n 1))
+    (for a in (range 1 (-> (* c c)
+                           (// 2)
+                           (sqrt)
+                           (floor)
+                           (+ 1)))
+      (= b (sqrt (- (* c c) (* a a))))
+      (if (== b (int b))
+          (+= rst 2))))
+  (return rst))
+
+(leetcode countTriples
+          [5]
+          [10])
