@@ -1,0 +1,30 @@
+(require lispy.macros [->])
+
+(defmacro leetcode [fnname *examples]
+  (return `(do (class Solution []
+                 (def ~fnname [self *args **kwargs]
+                   (return (solution *args **kwargs))))
+               ~(ife examples
+                     `(list (map (lambda [x] (print x "\n" (:= ans (solution *x))))
+                                 [~@examples]))
+                     None))))
+
+(from collections [Counter])
+
+(def solution [nums]
+  (= left (Counter))
+  (= right (Counter nums))
+  (= rst 0)
+  (for i in nums
+    (-= (sub right i) 1)
+    (+= rst (* (sub left (* 2 i))
+               (sub right (* 2 i))))
+    (%= rst 1_000_000_007)
+    (+= (sub left i) 1))
+  (return rst))
+
+(leetcode specialTriplets
+          [[6 3 6]]
+          [[0 1 0 0]]
+          [[8 4 2 8 4]]
+          [[84 2 93 1 2 2 26]])
