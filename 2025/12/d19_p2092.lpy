@@ -1,0 +1,46 @@
+(require lispy.macros [->])
+
+(from collections [defaultdict])
+
+(defmacro leetcode [fnname *examples]
+  (return `(do (from pprint [pprint])
+               (class Solution []
+                 (def ~fnname [self *args **kwargs]
+                   (return (solution *args **kwargs))))
+               ~(ife examples
+                     `(for example ~examples
+                        (print "\nexample:")
+                        (print example)
+                        (print "answer:")
+                        (print (solution *example)))
+                     None))))
+
+(def recur [coll graph p]
+  (when (in p coll)
+    (= new-members (- (sub graph p) coll))
+    (|= coll new-members)
+    (when new-members
+      (for np new-members
+        (recur coll graph np)))))
+
+(def solution [n meetings f-person]
+  (= rst (set))
+  (rst.add 0)
+  (rst.add f-person)
+  (meetings.sort :key (fn [x] (- (sub x 2))))
+  (while meetings
+    (= on-time-t (defaultdict set))
+    (= t (sub meetings -1 -1))
+    (while (and meetings
+                (== (sub meetings -1 -1) t))
+      (= [x y _] (meetings.pop))
+      (.add (sub on-time-t x) y)
+      (.add (sub on-time-t y) x))
+    (for p on-time-t
+      (recur rst on-time-t p)))
+  (return (list rst)))
+
+(leetcode findAllPeople
+          [6 [[1 2 5] [2 3 8] [1 5 10]] 1]
+          [4 [[3 1 3] [1 2 2] [0 3 3]] 3]
+          [5 [[3 4 2] [1 2 1] [2 3 1]] 1])
