@@ -1,0 +1,28 @@
+(require lispy.macros *)
+
+(defmacro leetcode [fnname *examples]
+  (return `(do (class Solution []
+                 (def ~fnname [self *args **kwargs]
+                   (return (solution *args **kwargs))))
+               ~(ife examples
+                     `(do
+                        (from pprint [pprint])
+                        (for example ~examples
+                          (print "\nexample:")
+                          (print example)
+                          (print "answer:")
+                          (print (solution *example))))
+                     None))))
+
+(def solution [cs]
+  (= v (sub cs 0))
+  (= rst 1)
+  (= mod 1_000_000_007)
+  (for i (range 1 (len cs))
+    (when (<= (sub cs i) v)
+      (return 0))
+    (= rst (-> (* rst i)
+               (% mod))))
+  (return rst))
+
+(leetcode countPermutations)
