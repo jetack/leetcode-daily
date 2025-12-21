@@ -1,0 +1,24 @@
+(require lispy.macros *)
+
+(defmacro leetcode [fnname *examples]
+  (return `(do (class Solution []
+                 (def ~fnname [self *args **kwargs]
+                   (return (solution *args **kwargs))))
+               ~(ife examples
+                     `(do
+                        (from pprint [pprint])
+                        (for [args expected] ~examples
+                          (= ans (solution *args))
+                          (when (!= ans expected)
+                            (print "\nargs:")
+                            (pprint args)
+                            (print "expected:")
+                            (pprint expected)
+                            (print "answer:")
+                            (pprint ans))))
+                     None))))
+
+;; frequently used
+(from collections *)
+(from heapq *)
+(from bisect *)
