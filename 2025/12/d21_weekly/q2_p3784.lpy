@@ -1,0 +1,32 @@
+(require lispy.macros *)
+
+(defmacro leetcode [fnname *examples]
+  (return `(do (class Solution []
+                 (def ~fnname [self *args **kwargs]
+                   (return (solution *args **kwargs))))
+               ~(ife examples
+                     `(do
+                        (from pprint [pprint])
+                        (for [args expected] ~examples
+                          (= ans (solution *args))
+                          (when (!= ans expected)
+                            (print "\nargs:")
+                            (pprint args)
+                            (print "expected:")
+                            (pprint expected)
+                            (print "answer:")
+                            (pprint ans))))
+                     None))))
+
+(from collections [defaultdict])
+
+(def solution [s cost]
+  (= charcost (defaultdict int))
+  (for i (range (len s))
+    (+= (sub charcost (sub s i))
+        (sub cost i)))
+  (return (- (sum cost)
+             (max (.values charcost)))))
+
+(leetcode minCost
+          [["aabaac" [1 2 3 4 1 10]] 11])
