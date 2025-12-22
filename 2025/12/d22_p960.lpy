@@ -1,0 +1,19 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [strs]
+  (= m (len (sub strs 0)))
+  (= mem [1 for _ in (range m)])
+  (for i (range 1 m)
+    (for j (range i)
+      (when (all ((<= (sub s j) (sub s i))
+                   for s in strs))
+        (= (sub mem i) (max (sub mem i)
+                            (+ (sub mem j) 1))))))
+  (return (- m (max mem))))
+
+(leetcode minDeletionSize
+          [(, ["babca" "bbazb"])
+           3])
