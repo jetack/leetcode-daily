@@ -1,0 +1,26 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [events]
+  (= order-e (sorted events :key (fn [x] (sub x 1))))
+  (= ends [(sub x 1) for x in order-e])
+  (= max-mem [0])
+  (for [s e v] order-e
+    (max-mem.append (max (sub max-mem -1)
+                         v)))
+  (= res 0)
+  (for [s _ v] events
+    (= i (bisect-left ends s))
+    (= res (max res (+ v
+                       (sub max-mem i)))))
+  (return res))
+
+(leetcode maxTwoEvents
+          [(, [[1,3,2],[4,5,2],[2,4,3]])
+           4]
+          [(, [[1,3,2],[4,5,2],[1,5,5]])
+           5]
+          [(, [[1,5,3],[1,5,1],[6,6,5]])
+           8])
