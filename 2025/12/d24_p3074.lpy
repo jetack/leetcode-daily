@@ -1,0 +1,15 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [apple capacity]
+  (= S (sum apple))
+  (capacity.sort)
+  (= res 0)
+  (while (and (> S 0) capacity)
+    (-= S (capacity.pop))
+    (++ res))
+  (return res))
+
+(leetcode minimumBoxes)
