@@ -7,15 +7,19 @@
                ~(ife examples
                      `(do
                         (from pprint [pprint])
+                        (= success True)
                         (for [args expected] ~examples
                           (= ans (solution *args))
                           (when (!= ans expected)
+                            (= success False)
                             (print "\nargs:")
                             (pprint args)
                             (print "expected:")
                             (pprint expected)
                             (print "answer:")
-                            (pprint ans))))
+                            (pprint ans)))
+                        (when success
+                          (print "All Test Passed!")))
                      None))))
 
 ;; frequently used

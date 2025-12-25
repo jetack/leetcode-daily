@@ -1,0 +1,22 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [happiness k]
+  (.sort happiness)
+  (= res 0)
+  (for i (range k)
+    (= h (sub happiness (- -1 i)))
+    (if (<= h i)
+        (break)
+        (+= res (- h i))))
+  (return res))
+
+(leetcode maximumHappinessSum
+          [(, [1,2,3] 2)
+           4]
+          [(, [1,1,1,1] 2)
+           1]
+          [(, [2,3,4,5] 1)
+           5])
