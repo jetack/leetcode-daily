@@ -1,0 +1,21 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [customers]
+  (= min-mem 0)
+  (= pen 0)
+  (= res -1)
+  (for t-1 (range (len customers))
+    (if (== (sub customers t-1) "Y")
+        (-- pen)
+        (++ pen))
+    (when (< pen min-mem)
+      (= [min-mem res] [pen t-1]))
+    )
+  (return (inc res)))
+
+(leetcode bestClosingTime
+          [(, "YYNY")
+           2])
