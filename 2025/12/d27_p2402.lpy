@@ -8,7 +8,7 @@
   (= occupied [])
   (= vacancies (list (range n)))
   (heapify vacancies)
-  (= cnt (Counter))
+  (= nmeets (* [0] n))
   (for m meetings
     (= [s e] m)
     (while (and occupied (<= (sub occupied 0 0) s))
@@ -20,8 +20,11 @@
         (do
           (= [f r] (heappop occupied))
           (heappush occupied [(+ e (- f s)) r])))
-    (++ (sub cnt r)))
-  (return (-> cnt (.most-common 1) (sub 0 0))))
+    (++ (sub nmeets r)))
+  (return (-> nmeets
+              (enumerate)
+              (max :key (fn [x] (sub x 1)))
+              (sub 0))))
 
 (leetcode mostBooked
           [(, 2 [[0,10],[1,5],[2,7],[3,4]])
