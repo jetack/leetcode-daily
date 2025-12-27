@@ -4,25 +4,23 @@
 (from leetcode *)
 
 (def solution [n meetings]
-  ;; just check all as described
   (.sort meetings)
-  (= rooms [[i 0] for i (range n)])
+  (= occupied [])
+  (= vacancies (list (range n)))
+  (heapify vacancies)
   (= cnt (Counter))
   (for m meetings
     (= [s e] m)
-    (= vacancies (-> rooms
-                     (->> (filter (fn [x] (<= (sub x 1) s)))
-                          (list))))
+    (while (and occupied (<= (sub occupied 0 0) s))
+      (heappush vacancies (-> occupied (heappop) (sub 1))))
     (if vacancies
-        (do (= r (-> vacancies
-                     (sub 0 0)))
-            (= (sub rooms r 1) e))
-        (do (= r (-> rooms
-                     (min :key (fn [x] (sub x 1)))
-                     (sub 0)))
-            (= (sub rooms r 1) (+ e (- (sub rooms r 1) s)))))
-    (++ (sub cnt r))
-    )
+        (do
+          (= r (heappop vacancies))
+          (heappush occupied [e r]))
+        (do
+          (= [f r] (heappop occupied))
+          (heappush occupied [(+ e (- f s)) r])))
+    (++ (sub cnt r)))
   (return (-> cnt (.most-common 1) (sub 0 0))))
 
 (leetcode mostBooked
