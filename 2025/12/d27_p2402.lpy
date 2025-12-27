@@ -1,0 +1,30 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [n meetings]
+  ;; just check all as described
+  (.sort meetings)
+  (= rooms [[i 0] for i (range n)])
+  (= cnt (Counter))
+  (for m meetings
+    (= [s e] m)
+    (= vacancies (-> rooms
+                     (->> (filter (fn [x] (<= (sub x 1) s)))
+                          (list))))
+    (if vacancies
+        (do (= r (-> vacancies
+                     (sub 0 0)))
+            (= (sub rooms r 1) e))
+        (do (= r (-> rooms
+                     (min :key (fn [x] (sub x 1)))
+                     (sub 0)))
+            (= (sub rooms r 1) (+ e (- (sub rooms r 1) s)))))
+    (++ (sub cnt r))
+    )
+  (return (-> cnt (.most-common 1) (sub 0 0))))
+
+(leetcode mostBooked
+          [(, 2 [[0,10],[1,5],[2,7],[3,4]])
+           0])
