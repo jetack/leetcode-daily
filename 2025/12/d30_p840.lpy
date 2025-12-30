@@ -1,0 +1,39 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def magic-p [i j grid]
+  (= cnt (Counter))
+  (= row-sum [0 0 0])
+  (= col-sum [0 0 0])
+  (= diag-sum [0 0])
+  (for k (range i (+ i 3))
+    (for l (range j (+ j 3))
+      (= elt (sub grid l k))
+      (++ (sub cnt elt))
+      (+= (sub row-sum (- l j)) elt)
+      (+= (sub col-sum (- k i)) elt)))
+  (for offset (range 3)
+    (+= (sub diag-sum 0) (sub grid (+ j offset) (+ i offset)))
+    (+= (sub diag-sum 1) (sub grid (+ j offset) (+ i 2 -offset))))
+  (return (and (all (map (fn [x] (== 1 (sub cnt x))) (range 1 10)))
+               (all (map (fn [x] (all (map (fn [y] (== y 15)) x)))
+                         [row-sum col-sum diag-sum])))))
+
+(def solution [grid]
+  (= n (len grid))
+  (= m (len (sub grid 0)))
+  (when (or (< n 3)
+            (< m 3))
+    (return 0))
+  (= res 0)
+  (for i (range (- m 2))
+    (for j (range (- n 2))
+      (when (magic-p i j grid)
+        (++ res))))
+  (return res))
+
+(leetcode numMagicSquaresInside
+          [(, [[4,3,8,4],[9,5,1,9],[2,7,6,2]])
+           1])
