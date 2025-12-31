@@ -3,24 +3,60 @@
 
 (from leetcode *)
 
-(def solution [r c a]
-  (def cross-p [d]
-    (def recur [i j :visited (set (map tuple (sub a [: _ d])))]
-      (cond (or (< i 1) (> i r)
-                (< j 1) (> j c)
-                (in (, i j) visited))
-            (return False)
-            
-            (== i r)
-            (return True))
-      (visited.add (, i j))
-      (return (any (map (fn [x] (recur *x visited))
-                        [[i (inc j)]
-                         [i (dec j)]
-                         [(inc i) j]
-                         [(dec i) j]]))))
-    (return (any (map (fn [x] (recur 1 x)) (range (inc c))))))
-  (return (dec (bisect_left (range (inc (len a))) 0 :key (fn [d] (- (cross-p d)))))))
+(def get-union-find [n]
+  (= roots (list (range n)))
+  (= sizes (* [1] n))
+  (def find [x]
+    (when (!= (:= rx (sub roots x)) x)
+      (= (sub roots x) (find rx)))
+    (return (sub roots x)))
+  (def union [x y]
+    (cond (== (:= rx (find x))
+              (:= ry (find y)))
+          (return)
+          (> (sub sizes rx) (sub sizes ry))
+          (= [rx ry] [ry rx]))
+    (= (sub roots rx) ry)
+    (+= (sub sizes ry) (sub sizes rx)))
+  (return [find union]))
+
+(def solution [r c water]
+  (= n (-> (* r c) (+ 2)))
+  (= [find union] (get-union-find n))
+  (= s (* r c))
+  (= e (inc s))
+  (def idx [x y]
+    (return (-> (* y c)
+                (+ x))))
+  (= land (* [0] n))
+  (= (sub land s) 1)
+  (= (sub land e) 1)
+  (for i (range (dec (len water)) -1 -1)
+    (= [y x] (sub water i))
+    ;; calibration
+    (-- x)
+    (-- y)
+    
+    (= id1 (idx x y))
+    (= (sub land id1) 1)
+
+    (for [nx ny] [[x (inc y)]
+                  [x (dec y)]
+                  [(inc x) y]
+                  [(dec x) y]]
+      (when (or (< nx 0) (>= nx c)
+                (< ny 0) (>= ny r)
+                (not (sub land (:= id2 (idx nx ny)))))
+        (continue))
+      (union id1 id2))
+
+    (when (== y 0)
+      (union id1 s))
+    (when (== y (dec r))
+      (union id1 e))
+    (when (== (find s) (find e))
+      (return i)))
+  (return 0))
 
 (leetcode latestDayToCross
           [(, 2 2 [[1,1],[2,1],[1,2],[2,2]])
