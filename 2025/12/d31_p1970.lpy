@@ -1,0 +1,31 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [r c a]
+  (def cross-p [d]
+    (def recur [i j :visited (set (map tuple (sub a [: _ d])))]
+      (cond (or (< i 1) (> i r)
+                (< j 1) (> j c)
+                (in (, i j) visited))
+            (return False)
+            
+            (== i r)
+            (return True))
+      (visited.add (, i j))
+      (return (any (map (fn [x] (recur *x visited))
+                        [[i (inc j)]
+                         [i (dec j)]
+                         [(inc i) j]
+                         [(dec i) j]]))))
+    (return (any (map (fn [x] (recur 1 x)) (range (inc c))))))
+  (return (dec (bisect_left (range (inc (len a))) 0 :key (fn [d] (- (cross-p d)))))))
+
+(leetcode latestDayToCross
+          [(, 2 2 [[1,1],[2,1],[1,2],[2,2]])
+           2]
+          [(, 2 2 [[1,1],[1,2],[2,1],[2,2]])
+           1]
+          [(, 3 3 [[1,2],[2,1],[3,3],[2,2],[1,1],[1,3],[2,3],[3,2],[3,1]])
+           3])
