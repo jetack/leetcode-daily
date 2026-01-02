@@ -1,0 +1,20 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [digits]
+  (return (-> digits
+              (->> (map str)
+                   (.join ""))
+              (int)
+              (+ 1)
+              (str)
+              (list)
+              (->> (map int))
+              (list))))
+
+(leetcode plusOne
+          ;; [(, exmple-input)
+          ;;  exmple-expected]
+          )
