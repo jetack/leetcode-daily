@@ -1,0 +1,16 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [nums]
+  (= mem (set))
+  (for x nums
+    (when (in x mem)
+      (return x))
+    (mem.add x)))
+
+(leetcode repeatedNTimes
+          ;; [(, exmple-input)
+          ;;  exmple-expected]
+          )
