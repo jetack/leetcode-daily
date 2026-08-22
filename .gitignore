@@ -324,3 +324,5 @@ privacy*
 
 *compile.hy
 *template.hy
+# Linked worktrees live here (git.md worktree workflow).
+.worktrees/
