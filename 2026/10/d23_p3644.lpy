@@ -1,0 +1,52 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from functools [reduce])
+
+(from leetcode *)
+
+(def solution [nums]
+  ;; beats 5.49%
+  (return (->> nums
+               (enumerate)
+               (filter (fn [x] (!= (sub x 0) (sub x 1))))
+               (list)
+               ((fn [z] (ife (== 0 (len z))
+                             0
+                             (reduce (fn [x y] (& x y)) z)))))))
+
+(def solution [nums]
+  ;; beats 20.88%
+  (= to-move [])
+  (for [i n] (enumerate nums)
+    (when (!= i n)
+      (.append to-move n)))
+  (when (== (len to-move) 0)
+    (return 0))
+  (return (reduce (fn [x y] (& x y))
+                  to-move)))
+
+(def solution [nums]
+  ;; beats 76.92%
+  (= k K (- (** 2 17) 1))
+  (for [i n] (enumerate nums)
+    (when (!= i n)
+      (&= k n)))
+  (return (% k K)))
+
+(def solution [nums]
+  ;; beats 5.49%
+  (= k K (- (** 2 17) 1))
+  (return (as-> nums X
+                (enumerate X)
+                (filter (fn [x] (!= (sub x 0) (sub x 1))) X)
+                (reduce (fn [x y] (& x (sub y 1))) X k)
+                (% X K))))
+
+(leetcode sortPermutation
+          [(, [0,3,2,1])
+           1]
+          [(, [0,1,3,2])
+           2]
+          [(, [3,2,1,0])
+           0])

@@ -1,0 +1,12 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution []
+  
+  )
+
+(leetcode methodName
+          [(, exmple-input)
+           exmple-expected])
