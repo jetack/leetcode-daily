@@ -1,0 +1,31 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+
+(def solution [aA lA aB lB]
+  (= days [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
+  (def parse-date [date]
+    (return (-> date
+                (.split "-")
+                (->> (map int))
+                (list))))
+  (= max-arrival (max aA aB))
+  (= min-leave (min lA lB))
+  (= [sm sd] (parse-date max-arrival))
+  (= [em ed] (parse-date min-leave))
+  (return (conde (> max-arrival min-leave)
+                 0
+                 
+                 (== sm em)
+                 (- ed sd -1)
+                 
+                 (+ ed (- (sub days sm) sd -1)
+                    (sum [(sub days m) for m in (range (inc sm) em)])))))
+
+(leetcode countDaysTogether
+          [(, "08-15" "08-18" "08-16" "08-19")
+           3]
+          [(, "10-01" "10-31" "11-01" "12-31")
+           0])
