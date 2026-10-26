@@ -1,0 +1,35 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [grid k]
+  (= [m n] [(len grid) (len (sub grid 0))])
+  (= visited [(* [0] n) for _ in (range m)])
+  (= rst 0)
+  (def island-sum [i j]
+    (if (or (< i 0)
+            (>= i m)
+            (< j 0)
+            (>= j n)
+            (== 0 (sub grid i j))
+            (sub visited i j))
+        (return 0))
+    (= (sub visited i j) 1)
+    (return (+ (sub grid i j)
+               (island-sum (dec i) j)
+               (island-sum (inc i) j)
+               (island-sum i (inc j))
+               (island-sum i (dec j)))))
+  (for i (range m)
+    (for j (range n)
+      (when (and (> (:= s (island-sum i j)) 0)
+                 (== 0 (% s k)))
+        (+= rst 1))))
+  (return rst))
+
+(leetcode countIslands
+          [(, [[0,2,1,0,0],[0,5,0,0,5],[0,0,1,0,0],[0,1,4,7,0],[0,2,0,0,8]] 5)
+           2]
+          [(, [[3,0,3,0], [0,3,0,3], [3,0,3,0]] 3)
+           6])
