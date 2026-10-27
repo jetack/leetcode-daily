@@ -1,0 +1,11 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [m n]
+  (= rst [(+ (* "#" (dec n)) ".") for _ in (range m)])
+  (= (sub rst 0) (* "." n))
+  (return rst))
+
+(leetcode createGrid)
