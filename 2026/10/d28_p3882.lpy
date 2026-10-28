@@ -1,0 +1,32 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from functools [cache])
+
+(from leetcode *)
+
+(def solution [grid]
+  (= [m n] [(len grid) (len (sub grid 0))])
+  (= mem [(* [None] n) for _ in (range m)])
+  (for i (range m)
+    (for j (range n)
+      (= (sub mem i j) (conde (== i j 0)
+                              {, (sub grid 0 0)}
+                              
+                              (== i 0)
+                              {, (^ (sub grid i j) x) for x in (sub mem i (dec j))}
+
+                              (== j 0)
+                              {, (^ (sub grid i j) x) for x in (sub mem (dec i) j)}
+
+                              {, (^ (sub grid i j) x) for x in (| (sub mem (dec i) j)
+                                                                  (sub mem i (dec j)))}))))
+  (return (min (sub mem (dec m) (dec n)))))
+
+(leetcode minCost
+          [(, [[1,2],[3,4]])
+           6]
+          [(, [[6,7],[5,8]])
+           9]
+          [(, [[2,7,5]])
+           0])
