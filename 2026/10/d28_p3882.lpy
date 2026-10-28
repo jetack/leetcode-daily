@@ -6,6 +6,7 @@
 (from leetcode *)
 
 (def solution [grid]
+  ;; mem
   (= [m n] [(len grid) (len (sub grid 0))])
   (= mem [(* [None] n) for _ in (range m)])
   (for i (range m)
@@ -22,6 +23,24 @@
                               {, (^ (sub grid i j) x) for x in (| (sub mem (dec i) j)
                                                                   (sub mem i (dec j)))}))))
   (return (min (sub mem (dec m) (dec n)))))
+
+(def solution [grid]
+  ;; recursion
+  (= [m n] [(len grid) (len (sub grid 0))])
+  (deco [cache]
+    (def recur [i j]
+      (return (conde (== i j 0)
+                     {, (sub grid 0 0)}
+                     
+                     (== i 0)
+                     {, (^ (sub grid i j) x) for x in (recur i (dec j))}
+
+                     (== j 0)
+                     {, (^ (sub grid i j) x) for x in (recur (dec i) j)}
+
+                     {, (^ (sub grid i j) x) for x in (| (recur (dec i) j)
+                                                         (recur i (dec j)))}))))
+  (return (min (recur (dec m) (dec n)))))
 
 (leetcode minCost
           [(, [[1,2],[3,4]])
