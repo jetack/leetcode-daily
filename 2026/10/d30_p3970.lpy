@@ -1,0 +1,35 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from heapq [heappop heappush])
+
+(from leetcode *)
+
+(def solution [n edges labels k]
+  (= mem [(* [(float "inf")] (inc k)) for _ in (range n)])
+  (= (sub mem 0 1) 0)
+  (= adj [[] for _ in (range n)])
+  (= pq [[0 1 0]])              ; [dist consec node]
+  (for [u v w] edges
+    (.append (sub adj u) [v w]))
+  (while (and pq (!= (sub pq 0 2) (- n 1)))
+    (= [d c u] (heappop pq))
+    (when (> d (sub mem u c))
+      (continue))
+    (for [v w] in (sub adj u)
+      (if (== (sub labels v) (sub labels u))
+          (= nc (inc c))
+          (= nc 1))
+      (when (> nc k)
+        (continue))
+      (= nd (+ d w))
+      (when (< nd (sub mem v nc))
+        (= (sub mem v nc) nd)
+        (heappush pq [nd nc v]))))
+  (return (ife pq
+               (sub pq 0 0)
+               -1)))
+
+(leetcode shortestPath
+          [(, 3 [[0,1,1],[1,2,1],[0,2,3]] "aab" 1)
+           3])
