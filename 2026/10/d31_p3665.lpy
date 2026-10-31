@@ -1,0 +1,38 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [grid]
+  (= [m n] [(len grid) (len (sub grid 0))])
+  (= mem [(* [[]] n) for _ in (range m)])
+  (= (sub mem 0 0) 1)
+
+  (def get-value [i j d]
+    (return (conde (or (< i 0) (< j 0))
+                   0
+
+                   (== (sub grid i j) 0)
+                   (sub mem i j)
+
+                   (== d "u")
+                   (get-value i (dec j) "l")
+
+                   (get-value (dec i) j "u"))))
+  (for i (range m)
+    (for j (range n)
+      (when (or (== i j 0)
+                (sub grid i j))
+        (continue))
+      (= (sub mem i j) (+ (get-value i (dec j) "l")
+                          (get-value (dec i) j "u")))))
+  (return (-> (sub mem (dec m) (dec n))
+              (% (+ 7 (** 10 9))))))
+
+(leetcode uniquePaths
+          [(, [[0,1,0],[0,0,1],[1,0,0]])
+           5]
+          [(, [[0,0],[0,0]])
+           2]
+          [(, [[0,1,1],[1,1,0]])
+           1])
