@@ -1,0 +1,10 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [nums]
+  (= minv (min nums))
+  (return (sum (map (fn [x] (- x minv)) nums))))
+
+(leetcode minMoves)
