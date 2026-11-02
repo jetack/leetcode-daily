@@ -25,18 +25,18 @@
   (return rst))
 
 (def solution [nums]
-  ;; beats: runtime 82.86%, memory 93.87%
+  ;; beats: runtime 89.42%, memory 77.83%
   (= n (len nums))
   (nums.sort)
   (= rst 0)
   (= h (// n 2))
-  (for i (range 1 (+ h 1))
+  (for i (range 1 (+ h (& n 1)))
     (+= rst (+ (* i (- (sub nums i)
                        (sub nums (dec i))))
                (* i (- (sub nums (- n i))
                        (sub nums (- n i 1)))))))
   (when (not (& n 1))
-    (-= rst (* h (- (sub nums h)
+    (+= rst (* h (- (sub nums h)
                     (sub nums (dec h))))))
   (return rst))
 
