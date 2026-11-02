@@ -1,0 +1,30 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [nums]
+  (= n (len nums))
+  (nums.sort)
+  (= left-mem (* [0] n))
+  (= right-mem (* [0] n))
+  (for i (range 1 n)
+    (= (sub left-mem i) (+ (* i
+                              (- (sub nums i) (sub nums (dec i))))
+                           (sub left-mem (dec i)))))
+  (for j (range (- n 2) -1 -1)
+    (= (sub right-mem j) (+ (* (- n 1 j)
+                               (- (sub nums (inc j)) (sub nums j)))
+                            (sub right-mem (inc j)))))
+
+  (= rst (float "inf"))
+  (for i (range n)
+    (= rst (min rst (+ (sub left-mem i)
+                       (sub right-mem i)))))
+  (return rst))
+
+(leetcode minMoves2
+          [(, [1,2,3])
+           2]
+          [(, [1,10,2,9])
+           16])
