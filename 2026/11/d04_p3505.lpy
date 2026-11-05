@@ -3,9 +3,8 @@
 
 (from leetcode *)
 
-(import heapq)
+(from heapq [heappop heappush])
 (from collections [defaultdict])
-
 
 (class SlidingMedian []
   (def __init__ [self]
@@ -13,182 +12,118 @@
     (= self.upper [])
     (= self.delayed (defaultdict int))
 
-    (= self.lower_size 0)
-    (= self.upper_size 0)
-    (= self.sum_lower 0)
-    (= self.sum_upper 0)
-    )
+    (= self.lower-size 0)
+    (= self.lower-sum 0)
+    (= self.upper-size 0)
+    (= self.upper-sum 0))
 
-  (def prune [self heap is_lower]
-    (while heap
-      (= value
-         (ife is_lower
-              (- (sub heap 0))
-              (sub heap 0)
-              )
-         )
+  (def lower-prune [self]
+    (while self.lower
+      (= value (- (sub self.lower 0)))
+      (when (== (sub self.delayed value) 0)
+        (break))
+      (heappop self.lower)
+      (-= (sub self.delayed value) 1)))
 
-      (if (== (sub self.delayed value) 0)
-          (break)
-          (do
-            (heapq.heappop heap)
-            (-= (sub self.delayed value) 1)
-            )
-          )
-      )
-    )
+  (def upper-prune [self]
+    (while self.upper
+      (= value (sub self.upper 0))
+      (when (== (sub self.delayed value) 0)
+        (break))
+      (heappop self.upper)
+      (-= (sub self.delayed value) 1)))
 
   (def rebalance [self]
-    (cond (> self.lower_size (+ self.upper_size 1))
+    (cond (> self.lower-size (inc self.upper-size))
           (do
-            (= value (- (heapq.heappop self.lower)))
+            (= value (- (heappop self.lower)))
+            (self.lower-prune)
 
-            (-= self.lower_size 1)
-            (+= self.upper_size 1)
-            (-= self.sum_lower value)
-            (+= self.sum_upper value)
+            (-= self.lower-size 1)
+            (-= self.lower-sum value)
+            (+= self.upper-size 1)
+            (+= self.upper-sum value)
 
-            (heapq.heappush self.upper value)
-            (self.prune self.lower True))
+            (heappush self.upper value))
 
-          (< self.lower_size self.upper_size)
+          (< self.lower-size self.upper-size)
           (do
-            (= value (heapq.heappop self.upper))
+            (= value (heappop self.upper))
+            (self.upper-prune)
 
-            (-= self.upper_size 1)
-            (+= self.lower_size 1)
-            (-= self.sum_upper value)
-            (+= self.sum_lower value)
+            (-= self.upper-size 1)
+            (-= self.upper-sum value)
+            (+= self.lower-size 1)
+            (+= self.lower-sum value)
 
-            (heapq.heappush self.lower (- value))
-            (self.prune self.upper False)
-            ))
-    )
+            (heappush self.lower (- value)))))
 
   (def add [self value]
-    (self.prune self.lower True)
-
-    (if (or
-          (not self.lower)
-          (<= value (- (sub self.lower 0)))
-          )
+    (if (or (not self.lower)
+            (<= value (- (sub self.lower 0))))
         (do
-          (heapq.heappush self.lower (- value))
-          (+= self.lower_size 1)
-          (+= self.sum_lower value)
-          )
+          (heappush self.lower (- value))
+          (+= self.lower-size 1)
+          (+= self.lower-sum value))
         (do
-          (heapq.heappush self.upper value)
-          (+= self.upper_size 1)
-          (+= self.sum_upper value)
-          )
-        )
-
-    (self.rebalance)
-    )
+          (heappush self.upper value)
+          (+= self.upper-size 1)
+          (+= self.upper-sum value)))
+    (self.rebalance))
 
   (def remove [self value]
-    (self.prune self.lower True)
-    (self.prune self.upper False)
-
     (+= (sub self.delayed value) 1)
 
     (if (<= value (- (sub self.lower 0)))
         (do
-          (-= self.lower_size 1)
-          (-= self.sum_lower value)
+          (-= self.lower-size 1)
+          (-= self.lower-sum value)
 
-          (if (== value (- (sub self.lower 0)))
-              (self.prune self.lower True)
-              )
-          )
+          (when (== value (- (sub self.lower 0)))
+            (self.lower-prune)))
         (do
-          (-= self.upper_size 1)
-          (-= self.sum_upper value)
+          (-= self.upper-size 1)
+          (-= self.upper-sum value)
 
-          (if (and self.upper (== value (sub self.upper 0)))
-              (self.prune self.upper False)
-              )
-          )
-        )
-
-    (self.rebalance)
-    )
+          (when (== value (sub self.upper 0))
+            (self.upper-prune))))
+    (self.rebalance))
 
   (def cost [self]
-    (self.prune self.lower True)
-    (= median (- (sub self.lower 0)))
+    (= med (- (sub self.lower 0)))
 
-    (return
-      (+ 
-        (- (* median self.lower_size) self.sum_lower)
-        (- self.sum_upper (* median self.upper_size))
-        )
-      )
-    )
-  )
-
-
-(def get_window_costs [nums x]
-  (= n (len nums))
-  (= sm (SlidingMedian))
-
-  (for i in (range x)
-    (sm.add (sub nums i))
-    )
-
-  (= costs [(sm.cost)])
-
-  (for i in (range x n)
-    (sm.remove (sub nums (- i x)))
-    (sm.add (sub nums i))
-    (.append costs (sm.cost))
-    )
-
-  (return costs)
-  )
+    (return (+ (- (* med self.lower-size) self.lower-sum)
+               (- self.upper-sum (* med self.upper-size))))))
 
 
 (def solution [nums x k]
   (= n (len nums))
 
-  (if (== k 0)
-      (return 0)
-      )
+  (= sm (SlidingMedian))
 
-  (if (> (* k x) n)
-      (return (float "inf"))
-      )
+  (for i (range x)
+    (sm.add (sub nums i)))
 
-  (= costs (get_window_costs nums x))
+  (= precalc [(sm.cost)])
+  (for i (range x n)
+    (sm.remove (sub nums (- i x)))
+    (sm.add (sub nums i))
+    (.append precalc (sm.cost)))
+
   (= inf (float "inf"))
 
-  (= dp
-     [[inf for j in (range (+ k 1))]
-      for i in (range (+ n 1))]
-     )
+  (= mem [[inf for j in (range (+ k 1))]
+          for i in (range (+ n 1))])
 
   (for i in (range (+ n 1))
-    (= (sub dp i 0) 0)
-    )
+    (= (sub mem i 0) 0))
 
-  (for i in (range 1 (+ n 1))
-    (for j in (range 1 (+ (min k (// i x)) 1))
-      (= (sub dp i j) (sub dp (- i 1) j))
-
-      (if (>= i x)
-          (= (sub dp i j)
-             (min
-               (sub dp i j)
-               (+ (sub dp (- i x) (- j 1))
-                  (sub costs (- i x)))
-               )
-             )
-          )
-      )
-    )
-
-  (return (sub dp n k))
+  (for j in (range 1 (inc k))
+    (for i in (range (* x (dec j)) (inc (- n x)))
+      (= (sub mem (+ i x) j) (min (+ (sub mem i (dec j)) (sub precalc i))
+                                  (sub mem (+ i x -1) j)))))
+  
+  (return (sub mem n k))
   )
 
 (leetcode minOperations
