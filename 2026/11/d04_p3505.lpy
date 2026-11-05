@@ -1,0 +1,197 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(import heapq)
+(from collections [defaultdict])
+
+
+(class SlidingMedian []
+  (def __init__ [self]
+    (= self.lower [])
+    (= self.upper [])
+    (= self.delayed (defaultdict int))
+
+    (= self.lower_size 0)
+    (= self.upper_size 0)
+    (= self.sum_lower 0)
+    (= self.sum_upper 0)
+    )
+
+  (def prune [self heap is_lower]
+    (while heap
+      (= value
+         (ife is_lower
+              (- (sub heap 0))
+              (sub heap 0)
+              )
+         )
+
+      (if (== (sub self.delayed value) 0)
+          (break)
+          (do
+            (heapq.heappop heap)
+            (-= (sub self.delayed value) 1)
+            )
+          )
+      )
+    )
+
+  (def rebalance [self]
+    (cond (> self.lower_size (+ self.upper_size 1))
+          (do
+            (= value (- (heapq.heappop self.lower)))
+
+            (-= self.lower_size 1)
+            (+= self.upper_size 1)
+            (-= self.sum_lower value)
+            (+= self.sum_upper value)
+
+            (heapq.heappush self.upper value)
+            (self.prune self.lower True))
+
+          (< self.lower_size self.upper_size)
+          (do
+            (= value (heapq.heappop self.upper))
+
+            (-= self.upper_size 1)
+            (+= self.lower_size 1)
+            (-= self.sum_upper value)
+            (+= self.sum_lower value)
+
+            (heapq.heappush self.lower (- value))
+            (self.prune self.upper False)
+            ))
+    )
+
+  (def add [self value]
+    (self.prune self.lower True)
+
+    (if (or
+          (not self.lower)
+          (<= value (- (sub self.lower 0)))
+          )
+        (do
+          (heapq.heappush self.lower (- value))
+          (+= self.lower_size 1)
+          (+= self.sum_lower value)
+          )
+        (do
+          (heapq.heappush self.upper value)
+          (+= self.upper_size 1)
+          (+= self.sum_upper value)
+          )
+        )
+
+    (self.rebalance)
+    )
+
+  (def remove [self value]
+    (self.prune self.lower True)
+    (self.prune self.upper False)
+
+    (+= (sub self.delayed value) 1)
+
+    (if (<= value (- (sub self.lower 0)))
+        (do
+          (-= self.lower_size 1)
+          (-= self.sum_lower value)
+
+          (if (== value (- (sub self.lower 0)))
+              (self.prune self.lower True)
+              )
+          )
+        (do
+          (-= self.upper_size 1)
+          (-= self.sum_upper value)
+
+          (if (and self.upper (== value (sub self.upper 0)))
+              (self.prune self.upper False)
+              )
+          )
+        )
+
+    (self.rebalance)
+    )
+
+  (def cost [self]
+    (self.prune self.lower True)
+    (= median (- (sub self.lower 0)))
+
+    (return
+      (+ 
+        (- (* median self.lower_size) self.sum_lower)
+        (- self.sum_upper (* median self.upper_size))
+        )
+      )
+    )
+  )
+
+
+(def get_window_costs [nums x]
+  (= n (len nums))
+  (= sm (SlidingMedian))
+
+  (for i in (range x)
+    (sm.add (sub nums i))
+    )
+
+  (= costs [(sm.cost)])
+
+  (for i in (range x n)
+    (sm.remove (sub nums (- i x)))
+    (sm.add (sub nums i))
+    (.append costs (sm.cost))
+    )
+
+  (return costs)
+  )
+
+
+(def solution [nums x k]
+  (= n (len nums))
+
+  (if (== k 0)
+      (return 0)
+      )
+
+  (if (> (* k x) n)
+      (return (float "inf"))
+      )
+
+  (= costs (get_window_costs nums x))
+  (= inf (float "inf"))
+
+  (= dp
+     [[inf for j in (range (+ k 1))]
+      for i in (range (+ n 1))]
+     )
+
+  (for i in (range (+ n 1))
+    (= (sub dp i 0) 0)
+    )
+
+  (for i in (range 1 (+ n 1))
+    (for j in (range 1 (+ (min k (// i x)) 1))
+      (= (sub dp i j) (sub dp (- i 1) j))
+
+      (if (>= i x)
+          (= (sub dp i j)
+             (min
+               (sub dp i j)
+               (+ (sub dp (- i x) (- j 1))
+                  (sub costs (- i x)))
+               )
+             )
+          )
+      )
+    )
+
+  (return (sub dp n k))
+  )
+
+(leetcode minOperations
+          [(, [5,-2,1,3,7,3,6,4,-1] 3 2)
+           8]
+          )
