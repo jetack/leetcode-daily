@@ -1,0 +1,38 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(from collections [deque defaultdict])
+
+(def solution [n logs x queries]
+  (= logs (deque (sorted logs :key (fn [x] (sub x 1)))))
+  (= sqs (sorted queries))
+  (= precalc (defaultdict int))
+  (= window (deque))
+  (= window-count (defaultdict int))
+  (= num-server 0)
+
+  (for q in sqs
+    (when (in q precalc)
+      (continue))
+    (while (and logs
+                (<= (sub logs 0 1) q))
+      (= [i t] (logs.popleft))
+      (window.append [i t])
+      (when (== 0 (sub window-count i))
+        (+= num-server 1))
+      (+= (sub window-count i) 1))
+    (while (and window
+                (< (sub window 0 1) (- q x)))
+      (= [i t] (window.popleft))
+      (-= (sub window-count i) 1)
+      (when (== 0 (sub window-count i))
+        (-= num-server 1)))
+    (= (sub precalc q) (- n num-server)))
+
+  (return [(sub precalc q) for q in queries]))
+
+(leetcode countServers
+          [(, 3 [[1,3],[2,6],[1,5]] 5 [10 11])
+           [1 2]])
