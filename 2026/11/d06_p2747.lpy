@@ -33,6 +33,29 @@
 
   (return [(sub precalc q) for q in queries]))
 
+(def solution [n logs x queries]
+  ;; simplified by Opus 5.5
+  (logs.sort :key (fn [log] (sub log 1)))
+  (= cnt (* [0] (+ n 1)))
+  (= active 0)
+  (= lo 0)
+  (= hi 0)
+  (= ans (* [0] (len queries)))
+  (for qi in (sorted (range (len queries)) :key queries.__getitem__)
+    (= q (sub queries qi))
+    (while (and (< hi (len logs)) (<= (sub logs hi 1) q))
+      (= i (sub logs hi 0))
+      (when (== 0 (sub cnt i)) (+= active 1))
+      (+= (sub cnt i) 1)
+      (+= hi 1))
+    (while (and (< lo hi) (< (sub logs lo 1) (- q x)))
+      (= i (sub logs lo 0))
+      (-= (sub cnt i) 1)
+      (when (== 0 (sub cnt i)) (-= active 1))
+      (+= lo 1))
+    (= (sub ans qi) (- n active)))
+  (return ans))
+
 (leetcode countServers
           [(, 3 [[1,3],[2,6],[1,5]] 5 [10 11])
            [1 2]])
