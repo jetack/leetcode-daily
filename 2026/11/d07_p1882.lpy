@@ -7,7 +7,6 @@
 
 (def solution [servers tasks]
   ;; change heap elements to tuple from list gives performance boost
-  (= m (len tasks))
   (= available [(, weight i) for [i weight] in (enumerate servers)])
   (heapify available)
   (= busy [])
