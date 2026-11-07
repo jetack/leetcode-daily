@@ -328,3 +328,5 @@ privacy*
 .worktrees/
 
 .nrepl-port
+# Symlink to the current month folder
+/now
