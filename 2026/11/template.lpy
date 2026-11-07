@@ -4,8 +4,7 @@
 (from leetcode *)
 
 (def solution []
-  
-  )
+  (pass))
 
 (leetcode methodName
           [(, exmple-input)
