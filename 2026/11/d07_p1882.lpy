@@ -1,0 +1,30 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(from heapq [heappush heappop heapify])
+
+(def solution [servers tasks]
+  (= m (len tasks))
+  (= available [[weight i] for [i weight] in (enumerate servers)])
+  (heapify available)
+  (= busy [])
+  (= result [])
+  (= now 0)
+  (for [task-index task-weight] in (enumerate tasks)
+    (= now (max now task-index))
+    (when (not available)
+      (= now (max now (sub busy 0 0))))
+    (while (and busy (<= (sub busy 0 0) now))
+      (heappush available (sub (heappop busy) 1)))
+    (= [weight i] (heappop available))
+    (result.append i)
+    (heappush busy [(+ now task-weight) [weight i]]))
+  (return result))
+
+(leetcode assignTasks
+          [(, [3 3 2] [1 2 3 2 1 2])
+           [2 2 0 2 1 2]]
+          [(, [5 1 4 3 2] [2 1 2 4 5 2 1])
+           [1 4 1 4 1 3 2]])
