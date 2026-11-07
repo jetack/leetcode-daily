@@ -6,8 +6,9 @@
 (from heapq [heappush heappop heapify])
 
 (def solution [servers tasks]
+  ;; change heap elements to tuple from list gives performance boost
   (= m (len tasks))
-  (= available [[weight i] for [i weight] in (enumerate servers)])
+  (= available [(, weight i) for [i weight] in (enumerate servers)])
   (heapify available)
   (= busy [])
   (= result [])
@@ -17,10 +18,11 @@
     (when (not available)
       (= now (max now (sub busy 0 0))))
     (while (and busy (<= (sub busy 0 0) now))
-      (heappush available (sub (heappop busy) 1)))
+      (= [_ weight i] (heappop busy))
+      (heappush available (, weight i)))
     (= [weight i] (heappop available))
     (result.append i)
-    (heappush busy [(+ now task-weight) [weight i]]))
+    (heappush busy (, (+ now task-weight) weight i)))
   (return result))
 
 (leetcode assignTasks
