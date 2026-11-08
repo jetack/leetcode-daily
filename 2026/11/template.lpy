@@ -7,5 +7,5 @@
   (pass))
 
 (leetcode methodName
-          [(, exmple-input)
-           exmple-expected])
+          (, (, exmple-input)
+             exmple-expected))
