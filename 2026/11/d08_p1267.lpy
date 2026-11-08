@@ -25,6 +25,21 @@
 
   (return result))
 
+(def solution [grid]
+  ;; optimized by Opus 5.5
+  ;; count with builtins instead of python loops
+  (= row-cnt [(sum row) for row in grid])
+  (= col-cnt [(sum col) for col in (zip *grid)])
+
+  ;; answer = all servers - isolated ones
+  ;; a server is isolated when it is alone in both its row and its column,
+  ;; so only rows holding exactly one server need checking
+  (= isolated (sum (1 for [row cnt] in (zip grid row-cnt)
+                      if (and (== cnt 1)
+                              (== (sub col-cnt (row.index 1)) 1)))))
+
+  (return (- (sum row-cnt) isolated)))
+
 (leetcode countServers
           [(, [[1 0] [0 1]])
            0]
