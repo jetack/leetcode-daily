@@ -51,6 +51,32 @@
 
   (return [i for i in (range k) if (== max-tasks (sub counter i))]))
 
+(def solution [k arrival load]
+  ;; optimized by Opus 5.5
+  ;; one heap of free servers keyed by a virtual request index:
+  ;; server j freed at request i waits at the next index >= i whose % k is j,
+  ;; so the heap top is always the next free server at or after i % k, wrap included
+  (= free (list (range k)))  ; at request 0 server j's key is j itself; sorted, so already a heap
+  (= busy [])
+  (= counter (* [0] k))
+
+  (for [i [a l]] in (enumerate (zip arrival load))
+    ;; reinstate free worker under its virtual key
+    (while (and busy
+                (<= (sub busy 0 0) a))
+      (= j (sub (heappop busy) 1))
+      (heappush free (+ i (% (- j i) k))))
+
+    ;; pick and dispatch worker; an empty heap means all busy, so drop
+    (when free
+      (= w (% (heappop free) k))
+      (+= (sub counter w) 1)
+      (heappush busy (, (+ a l) w))))
+
+  (= max-tasks (max counter))
+
+  (return [j for j in (range k) if (== max-tasks (sub counter j))]))
+
 (leetcode busiestServers
           (, (, 3 [1 2 3 4 5] [5 2 3 3 3])
              [1])
