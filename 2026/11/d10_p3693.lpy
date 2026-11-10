@@ -1,0 +1,35 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [n costs]
+  ;; time limit
+  (= mem [[0 0]])
+  (while (and mem
+              (!= (sub mem 0 1) n))
+    (= [d i] (heappop mem))
+    (for j (range (+ i 1) (inc (min (+ i 3) n)))
+      (heappush mem [(+ d (sub costs (dec j)) (** (- j i) 2)) j])))
+  (return (sub mem 0 0)))
+
+(def solution [n costs]
+  ;; works
+  (= dp (* [(float "inf")] (+ n 1)))
+  (= costs (+ [0] costs))
+  (= (sub dp 0) 0)
+  (for j (range (+ n 1))
+    (for i (range (max 0 (- j 3)) j)
+      (= val (+ (sub dp i) (sub costs j) (** (- j i) 2)))
+      (when (< val (sub dp j))
+        (= (sub dp j) val))))
+  (return (sub dp -1)))
+
+(leetcode climbStairs
+          (, (, 4 [1 2 3 4])
+             13)
+          (, (, 4 [5 1 6 2])
+             11)
+          (, (, 3 [9 8 3])
+             12)
+          )
