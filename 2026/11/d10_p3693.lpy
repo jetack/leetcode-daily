@@ -25,6 +25,16 @@
         (= (sub dp j) val))))
   (return (sub dp -1)))
 
+(def solution [n costs]
+  ;; optimized by Opus 5.5
+  ;; dp[j] only reads dp[j-3..j-1], so keep three rolling values;
+  ;; costs[j] is shared by all three jumps into j, so it moves out of the min
+  (= inf (float "inf"))
+  (= [a b c] (, inf inf 0))  ; dp[-2], dp[-1], dp[0]
+  (for x costs
+    (= [a b c] (, b c (+ x (min (+ a 9) (+ b 4) (+ c 1))))))
+  (return c))
+
 (leetcode climbStairs
           (, (, 4 [1 2 3 4])
              13)
