@@ -1,0 +1,33 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [cost1 cost2 costBoth need1 need2]
+  (= total 0)
+  (when (> cost1 cost2)
+    (= [cost1 cost2] (, cost2 cost1))
+    (= [need1 need2] (, need2 need1)))
+  (when (<= costBoth cost1)
+    (return (* costBoth (max need1 need2))))
+  (when (<= costBoth cost2)
+    (return (+ (* costBoth need2)
+               (* cost1 (max 0 (- need1 need2))))))
+  (when (and need1 need2
+             (<= costBoth (+ cost1 cost2)))
+    (= mneed (min need1 need2))
+    (-= need1 mneed)
+    (-= need2 mneed)
+    (+= total (* mneed costBoth)))
+  (+= total (* need1 cost1))
+  (+= total (* need2 cost2))
+  (return total))
+
+(leetcode minimumCost
+          (, (, 3 2 1 3 2)
+             3)
+          (, (, 5 4 15 2 3)
+             22)
+          (, (, 5 4 15 0 0)
+             0)
+          )
