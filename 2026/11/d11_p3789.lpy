@@ -23,6 +23,13 @@
   (+= total (* need2 cost2))
   (return total))
 
+(def solution [cost1 cost2 costBoth need1 need2]
+  ;; opus: price each unit by its cheapest cover, no branches
+  (= both (min need1 need2))
+  (return (+ (* both (min costBoth (+ cost1 cost2)))
+             (* (- need1 both) (min cost1 costBoth))
+             (* (- need2 both) (min cost2 costBoth)))))
+
 (leetcode minimumCost
           (, (, 3 2 1 3 2)
              3)
