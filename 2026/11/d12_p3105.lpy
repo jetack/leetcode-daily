@@ -1,0 +1,37 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [nums]
+  (= inf (float "inf"))
+  (= dec-cnt 0)
+  (= dec-last inf)
+  (= inc-cnt 0)
+  (= inc-last -inf)
+  (= result 0)
+
+  (for n nums
+    (if (> n inc-last)
+        (do (+= inc-cnt 1)
+            (= inc-last n))
+        (do (= result (max result inc-cnt))
+            (= inc-cnt 1)
+            (= inc-last n)))
+    (if (< n dec-last)
+        (do (+= dec-cnt 1)
+            (= dec-last n))
+        (do (= result (max result dec-cnt))
+            (= dec-cnt 1)
+            (= dec-last n))))
+
+  (return (max result inc-cnt dec-cnt)))
+
+(leetcode longestMonotonicSubarray
+          (, (, [1 4 3 3 2])
+             2)
+          (, (, [3 3 3 3])
+             1)
+          (, (, [3 2 1])
+             3)
+          )
