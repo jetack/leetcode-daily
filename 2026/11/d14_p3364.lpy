@@ -1,0 +1,20 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [nums l r]
+  (= n (len nums))
+  (= result (float "inf"))
+  (= valid False)
+  (for i (range n)
+    (for j (range (+ i l) (inc (min n (+ i r))))
+      (when (and (> (:= subsum (sum (sub nums [: i j]))) 0)
+                 (< subsum result))
+        (= result subsum)
+        (= valid True))))
+  (return (ife valid result -1)))
+
+(leetcode minimumSumSubarray
+          (, (, [3, -2, 1, 4] 2 3)
+             1))
