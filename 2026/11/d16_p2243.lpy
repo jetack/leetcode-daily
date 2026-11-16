@@ -3,17 +3,14 @@
 
 (from leetcode *)
 
-(from functools [reduce])
-
 (def solution [s k]
-  (def round [s k]
-    (return (->> [(sub s [: i (+ i k)]) for i in (range 0 (len s) k)]
-                 (map (fn [x] (-> (map int x)
-                                  (sum)
-                                  (str))))
-                 (reduce (fn [x y] (+ x y))))))
   (while (> (len s) k)
-    (= s (round s k)))
+    (= s (->> [(sub s [: i (+ i k)]) for i in (range 0 (len s) k)]
+              (map (fn [x] (-> (map int x)
+                               (sum)
+                               (str))))
+              (.join ""))))
+  
   (return s))
 
 (leetcode digitSum
