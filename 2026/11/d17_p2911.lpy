@@ -1,0 +1,50 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def pal-cost [s]
+  (= n (len s))
+  (= result 0)
+  (for i (range (// n 2))
+    (when (!= (sub s i) (sub s (- n 1 i)))
+      (+= result 1)))
+  (return result))
+
+(def semi-pal-cost [s]
+  (= n (len s))
+  (= result (float "inf"))
+  (for d (range 1 (-> n (// 2) (+ 1)))
+    (when (% n d)
+      (continue))
+    (= d-cost 0)
+    (for i (range d)
+      (+= d-cost (pal-cost (sub s [: i n d]))))
+    (= result (min result d-cost)))
+  (return result))
+
+(def solution [s k]
+  ;; solved with hint
+  (= inf (float "inf"))
+  (= n (len s))
+  (= dp [(* [inf] (inc k)) for _ in (range n)])
+  (= v [(* [0] (inc n)) for _ in (range n)])
+  (for i (range n)
+    (for j (range (+ i 2) (inc n))
+      (= (sub v i j) (semi-pal-cost (sub s [: i j])))))
+  (for i (range (dec n) -1 -1)
+    (= (sub dp i 1) (sub v i n)))
+  (for j (range 2 (inc k))
+    (for i (range (- n (* 2 j)) -1 -1)
+      (= (sub dp i j) (min [(+ (sub v i x)
+                               (sub dp x (- j 1)))
+                            for x in (range (+ i 2) (- n 1))]))))
+  (return (sub dp 0 k)))
+
+(leetcode minimumChanges
+          (, (, "abcac" 2)
+             1)
+          (, (, "abcdef" 2)
+             2)
+          (, (, "aabbaa" 3)
+             0))
