@@ -41,6 +41,38 @@
                             for x in (range (+ i 2) (- n 1))]))))
   (return (sub dp 0 k)))
 
+;; opus: cost table in O(n^2 log n) by peeling d chars off both ends, with O(1) block mismatches
+(def solution [s k]
+  (= inf (float "inf"))
+  (= n (len s))
+  ;; (sub D a b) = #t with s[a+t] != s[b+t]; a block mismatch is a difference of two D's
+  (= D [(* [0] (inc n)) for _ in (range (inc n))])
+  (for a (range (dec n) -1 -1)
+    (for b (range (dec n) -1 -1)
+      (= (sub D a b) (+ (!= (sub s a) (sub s b))
+                        (sub D (inc a) (inc b))))))
+  (= v [(* [inf] (inc n)) for _ in (range n)])
+  (for d (range 1 (inc (// n 2)))
+    ;; (sub c q l) = cost of s[l : l+q*d] for this d; q = 0 and 1 cost 0
+    (= c [(* [0] (inc n)) for _ in (range (inc (// n d)))])
+    (for q (range 2 (inc (// n d)))
+      (= m (* q d))
+      (for l (range (inc (- n m)))
+        (= r (+ l m))
+        ;; groups pair s[l:l+d] with s[r-d:r] position by position, the inside is length (q-2)*d
+        (= (sub c q l) (+ (sub c (- q 2) (+ l d))
+                          (- (sub D l (- r d)) (sub D (+ l d) r))))
+        (= (sub v l r) (min (sub v l r) (sub c q l))))))
+  (= dp [(* [inf] (inc k)) for _ in (range n)])
+  (for i (range (dec n) -1 -1)
+    (= (sub dp i 1) (sub v i n)))
+  (for j (range 2 (inc k))
+    (for i (range (- n (* 2 j)) -1 -1)
+      (= (sub dp i j) (min [(+ (sub v i x)
+                               (sub dp x (- j 1)))
+                            for x in (range (+ i 2) (- n 1))]))))
+  (return (sub dp 0 k)))
+
 (leetcode minimumChanges
           (, (, "abcac" 2)
              1)
