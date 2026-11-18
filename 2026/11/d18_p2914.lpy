@@ -1,0 +1,19 @@
+(require lispy.macros *)
+(require leetcode *)
+
+(from leetcode *)
+
+(def solution [s]
+  (= result 0)
+  (for i (range 0 (len s) 2)
+    (when (!= (sub s i) (sub s (inc i)))
+      (+= result 1)))
+  (return result))
+
+(leetcode minChanges
+         (, (, "1001")
+            2)
+         (, (, "10")
+            1)
+         (, (, "0000")
+            0))
