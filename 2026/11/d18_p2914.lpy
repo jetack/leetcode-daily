@@ -10,6 +10,12 @@
       (+= result 1)))
   (return result))
 
+;; opus: compare the even and odd halves pairwise in C with map(ne, ...)
+(def solution [s]
+  (from operator [ne])
+  (return (-> (map ne (sub s [: 0 _ 2]) (sub s [: 1 _ 2]))
+              sum)))
+
 (leetcode minChanges
          (, (, "1001")
             2)
