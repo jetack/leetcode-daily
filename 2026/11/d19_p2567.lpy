@@ -18,6 +18,14 @@
                   (+ (- a1 a0)
                      (- a-1 a-2))))))
 
+;; opus: only the 3 smallest and 3 largest matter, so pick them in O(n) instead of sorting
+(def solution [nums]
+  (= [a0 a1 a2] (nsmallest 3 nums))
+  (= [z0 z1 z2] (nlargest 3 nums))
+  (return (min (- z0 a2)
+               (- z1 a1)
+               (- z2 a0))))
+
 (leetcode minimizeSum
           (, (, [1 4 7 8 5])
              3)
